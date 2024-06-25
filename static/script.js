@@ -1,32 +1,22 @@
-import {fetchModelsFromOpenAI,sendMessageToOpenAI} from './llm_api.js';
-import {loadChatsFromLocalStorage,storeChatsInLocalStorage,
-  loadPromptsFromLocalStorage,storePromptsInLocalStorage,getApiKeyFromLocalStorage,
-  storeApiKeyInLocalStorage} from './localStorage.js';
+import { fetchModelsFromOpenAI, sendMessageToOpenAI } from './llm_api.js';
+import {
+  loadChatsFromLocalStorage, storeChatsInLocalStorage,
+  loadPromptsFromLocalStorage, storePromptsInLocalStorage, 
+  getApiKeyFromLocalStorage,
+  storeApiKeyInLocalStorage
+} from './localStorage.js';
+
+import { domElements } from './dom_elements.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM Element References
-  const chatList = document.getElementById('chat-list');
-  const chatMessages = document.getElementById('chat-messages');
-  const userInput = document.getElementById('user-input');
-  const sendButton = document.getElementById('send-button');
-  const newChatButton = document.getElementById('new-chat');
-  const saveChatButton = document.getElementById('save-chat');
-  const currentChatTitle = document.getElementById('current-chat-title');
-  const apiKeyModal = document.getElementById('api-key-modal');
-  const apiKeyInput = document.getElementById('api-key-input');
-  const submitApiKeyButton = document.getElementById('submit-api-key');
-  const modelSelect = document.getElementById('model-select');
-  const addPromptButton = document.getElementById('add-prompt-button');
-  const addPromptModal = document.getElementById('add-prompt-modal');
-  const promptNameInput = document.getElementById('prompt-name-input');
-  const promptContentInput = document.getElementById('prompt-content-input');
-  const savePromptButton = document.getElementById('save-prompt-button');
-  const promptList = document.getElementById('prompt-list');
-  const promptContent = document.getElementById('prompt-content');
-  const promptForm = document.getElementById('prompt-form');
-  const dynamicInputArea = document.getElementById('dynamic-input-area');
-  const defaultInput = document.getElementById('default-input');
-  const promptInput = document.getElementById('prompt-input');
-  const loadingIndicator = document.getElementById('loading-indicator');
+
+  const { chatList, chatMessages, userInput, sendButton, newChatButton,
+     saveChatButton, currentChatTitle, apiKeyModal, apiKeyInput, 
+     submitApiKeyButton, modelSelect, addPromptButton, addPromptModal, 
+     promptNameInput, promptContentInput, savePromptButton, promptList, 
+     promptContent, promptForm, dynamicInputArea, defaultInput, 
+     promptInput, loadingIndicator } = domElements;
+
 
   // Application State
   let currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
@@ -117,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Custom renderer for marked
   const renderer = new marked.Renderer();
-  renderer.text = function(text) {
+  renderer.text = function (text) {
     if (typeof text !== 'string') {
       console.warn('Received non-string text in renderer:', text);
       return String(text); // Convert to string if it's not already
@@ -134,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     specialTags.forEach(tag => {
       const regex = new RegExp(`<${tag}>(.+?)</${tag}>`, 'g');
-      text = text.replace(regex, (match, p1) => 
+      text = text.replace(regex, (match, p1) =>
         `<span class="special-tag ${tag.replace('_', '-')}">${p1}</span>`
       );
     });
@@ -193,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const regex = new RegExp(`<(${specialTags.join('|')})>(.+?)</\\1>`, 'g');
-    return content.replace(regex, (match, tag, content) => 
+    return content.replace(regex, (match, tag, content) =>
       `<span class="special-tag ${tag.replace('_', '-')}">${content}</span>`
     );
   }
@@ -201,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // render maths and equations
   function renderMath(content) {
     return content.replace(/\$\$(.*?)\$\$/g, (match, p1) => {
-      return katex.renderToString(p1, {throwOnError: false});
+      return katex.renderToString(p1, { throwOnError: false });
     });
   }
 
@@ -345,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   };
-  
+
   // Construct Prompt Message
   function constructPromptMessage() {
     let promptText = selectedPrompt.content;
@@ -392,30 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     promptContentInput.value = '';
   }
 
-  // // Local Storage Helpers
-  // function loadChatsFromLocalStorage() {
-  //   return JSON.parse(localStorage.getItem('chats'));
-  // }
 
-  // function storeChatsInLocalStorage(chats) {
-  //   localStorage.setItem('chats', JSON.stringify(chats));
-  // }
-
-  // function loadPromptsFromLocalStorage() {
-  //   return JSON.parse(localStorage.getItem('prompts'));
-  // }
-
-  // function storePromptsInLocalStorage(prompts) {
-  //   localStorage.setItem('prompts', JSON.stringify(prompts));
-  // }
-
-  // function getApiKeyFromLocalStorage() {
-  //   return localStorage.getItem('openai_api_key');
-  // }
-
-  // function storeApiKeyInLocalStorage(apiKey) {
-  //   localStorage.setItem('openai_api_key', apiKey);
-  // }
 
   // Initialize the application
   updateChatList();
