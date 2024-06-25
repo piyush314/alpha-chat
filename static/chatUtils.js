@@ -1,6 +1,7 @@
 import { storeChatsInLocalStorage } from './localStorage.js';
 import state from './state.js';
 import { updateChatList } from './chatListManager.js';
+import { setInputMode } from './promptUI.js';
 
   // Chat Saving
   export function saveCurrentChat() {
@@ -22,4 +23,17 @@ import { updateChatList } from './chatListManager.js';
       currentChatTitle.textContent = title;
       saveCurrentChat();
     }
+  }
+
+
+  export function newChatButtonHandler() {
+    
+
+    state.currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
+    const currentChatTitle = document.getElementById('current-chat-title');
+    currentChatTitle.textContent = 'New Chat';
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = '';
+    setInputMode('default');
+    // saveCurrentChat();
   }

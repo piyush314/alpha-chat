@@ -11,7 +11,7 @@ import { updatePromptList, setInputMode } from './promptUI.js';
 import { addMessage } from './chatRender.js';  // Import addMessage function
 import { updateChatList } from './chatListManager.js';
 import { initializeModelSelection, setupModelDropdownHandlers } from './modelParamsUI.js';
-import { saveCurrentChat, saveChatButtonHandler } from './chatUtils.js';
+import { saveChatButtonHandler, newChatButtonHandler } from './chatUtils.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,10 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // New Chat Button Handler
   newChatButton.onclick = () => {
-    state.currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
-    currentChatTitle.textContent = 'New Chat';
-    chatMessages.innerHTML = '';
-    setInputMode('default');
+    newChatButtonHandler();
   };
 
   // Save Chat Button Handler
