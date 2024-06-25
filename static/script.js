@@ -7,6 +7,8 @@ import {
 
 import { domElements } from './dom_elements.js';
 import  state  from './state.js'; 
+import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -226,28 +228,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Save Prompt Button Handler
   savePromptButton.onclick = () => {
-    const name = promptNameInput.value.trim();
-    const content = promptContentInput.value.trim();
-    if (name && content) {
-      const newPrompt = { name, content, variables: parseVariables(content) };
-      state.prompts.push(newPrompt);
-      storePromptsInLocalStorage(state.prompts);
-      updatePromptList();
-      hideAddPromptModal();
-      clearAddPromptForm();
-    }
+    savePromptButtonHandler();
   };
 
-  // Parse Variables from Prompt Content
-  function parseVariables(content) {
-    const regex = /{{(\w+)}}/g;
-    const variables = new Set();
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      variables.add(match[1]);
-    }
-    return Array.from(variables);
-  }
+  // // Parse Variables from Prompt Content
+  // function parseVariables(content) {
+  //   const regex = /{{(\w+)}}/g;
+  //   const variables = new Set();
+  //   let match;
+  //   while ((match = regex.exec(content)) !== null) {
+  //     variables.add(match[1]);
+  //   }
+  //   return Array.from(variables);
+  // }
 
   // Update Prompt List
   function updatePromptList() {
@@ -258,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Create Prompt Item
+  // // Create Prompt Item
   function createPromptItem(prompt) {
     const promptItem = document.createElement('div');
     promptItem.classList.add('prompt-item');
@@ -269,10 +262,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Select Prompt
   function selectPrompt(prompt) {
+    console.log('Selected prompt:', prompt);
     state.selectedPrompt = prompt;
     promptContent.textContent = prompt.content;
     generatePromptForm(prompt.variables);
-    setInputMode(prompt.variables.length > 1 ? 'prompt' : 'default');
+    setInputMode(prompt.variables.length > 0 ? 'prompt' : 'default');
   }
 
   // Generate Prompt Form
@@ -301,40 +295,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.isProcessing) return;
 
     let message;
-    if (state.currentInputMode === 'default') {
-      message = userInput.value;
+    if (state.currentInputMode === 'prompt' && state.selectedPrompt.variables.length > 0) {
+        message = constructPromptMessage();
     } else {
-      message = constructPromptMessage();
+        // This will handle both the default mode and prompt mode with no variables
+        const promptText = state.selectedPrompt.content;
+        const userInputText = userInput.value.trim();
+        message = `${promptText}\n\n\`\`\`\n${userInputText}\n\`\`\``;
     }
 
     if (message) {
-      setProcessingState(true);
-      try {
-        addMessage('user', message); // This will now render Markdown
-        state.currentChat.messages.push({ sender: 'user', text: message });
-        clearInputs();
+        setProcessingState(true);
+        try {
+            addMessage('user', message);
+            state.currentChat.messages.push({ sender: 'user', text: message });
+            clearInputs();
 
-        const response = await sendMessageToOpenAI(message, state.selectedModel, state.apiKey);
-        addMessage('bot', response); // This will now render Markdown
-        state.currentChat.messages.push({ sender: 'bot', text: response });
-      } catch (error) {
-        console.error('Error in send process:', error);
-        addMessage('bot', 'Sorry, I encountered an error. Please try again.');
-      } finally {
-        setProcessingState(false);
-      }
+            const response = await sendMessageToOpenAI(message, state.selectedModel, state.apiKey);
+            addMessage('bot', response);
+            state.currentChat.messages.push({ sender: 'bot', text: response });
+        } catch (error) {
+            console.error('Error in send process:', error);
+            addMessage('bot', 'Sorry, I encountered an error. Please try again.');
+        } finally {
+            setProcessingState(false);
+        }
     }
-  };
+};
 
   // Construct Prompt Message
   function constructPromptMessage() {
     let promptText = state.selectedPrompt.content;
     state.selectedPrompt.variables.forEach(variable => {
-      const input = document.getElementById(`var-${variable}`);
-      promptText = promptText.replace(`{{${variable}}}`, input.value.trim());
+        const input = document.getElementById(`var-${variable}`);
+        promptText = promptText.replace(`{{${variable}}}`, input.value.trim());
     });
     return promptText;
-  }
+}
+
 
   // Clear Inputs
   function clearInputs() {
@@ -359,18 +357,18 @@ document.addEventListener('DOMContentLoaded', () => {
     apiKeyModal.style.display = 'none';
   }
 
-  function showAddPromptModal() {
-    addPromptModal.style.display = 'block';
-  }
+  // function showAddPromptModal() {
+  //   addPromptModal.style.display = 'block';
+  // }
 
-  function hideAddPromptModal() {
-    addPromptModal.style.display = 'none';
-  }
+  // function hideAddPromptModal() {
+  //   addPromptModal.style.display = 'none';
+  // }
 
-  function clearAddPromptForm() {
-    promptNameInput.value = '';
-    promptContentInput.value = '';
-  }
+  // function clearAddPromptForm() {
+  //   promptNameInput.value = '';
+  //   promptContentInput.value = '';
+  // }
 
 
 
