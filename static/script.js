@@ -9,6 +9,7 @@ import  state  from './state.js';
 import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
 import { updatePromptList } from './promptUI.js';
 import { addMessage } from './chatRender.js';  // Import addMessage function
+import { updateChatList } from './chatListManager.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -67,30 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAvailableModels();
   }
 
-  // Chat List Management
-  function updateChatList() {
-    chatList.innerHTML = '';
-    state.chats.forEach(chat => {
-      const chatItem = createChatItem(chat);
-      chatList.appendChild(chatItem);
-    });
-  }
-
-  function createChatItem(chat) {
-    const chatItem = document.createElement('div');
-    chatItem.classList.add('chat-item');
-    chatItem.textContent = chat.title;
-    chatItem.onclick = () => loadChat(chat);
-    return chatItem;
-  }
-
-  // Chat Loading
-  function loadChat(chat) {
-    state.currentChat = chat;
-    currentChatTitle.textContent = chat.title;
-    chatMessages.innerHTML = '';
-    chat.messages.forEach(message => addMessage(message.sender, message.text, chatMessages));
-  }
 
   // Chat Saving
   function saveCurrentChat() {
