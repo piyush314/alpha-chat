@@ -1,5 +1,8 @@
 import state from './state.js';
 import { storePromptsInLocalStorage } from './localStorage.js';
+import { updatePromptList, createPromptItem, selectPrompt, generatePromptForm } from './promptUI.js';
+// Use these imported functions where necessary.
+
 
 export function showAddPromptModal() {
     const addPromptModal = document.getElementById('add-prompt-modal');
@@ -43,43 +46,3 @@ function parseVariables(content) {
     return Array.from(variables);
 }
 
-export function updatePromptList() {
-    const promptList = document.getElementById('prompt-list');
-    promptList.innerHTML = '';
-    state.prompts.forEach(prompt => {
-        const promptItem = createPromptItem(prompt);
-        promptList.appendChild(promptItem);
-    });
-}
-
-function createPromptItem(prompt) {
-    console.log('prompt from create', prompt);
-    const promptItem = document.createElement('div');
-    promptItem.classList.add('prompt-item');
-    promptItem.textContent = prompt.name;
-    promptItem.onclick = () => selectPrompt(prompt);
-    return promptItem;
-}
-
-export function selectPrompt(prompt) {
-    console.log("Slecting prompt", prompt)
-    const promptContent = document.getElementById('prompt-content');
-    state.selectedPrompt = prompt;
-    promptContent.textContent = prompt.content;
-    generatePromptForm(prompt.variables);
-}
-
-function generatePromptForm(variables) {
-    console.log("generating new form")
-    const promptForm = document.getElementById('prompt-form');
-    promptForm.innerHTML = '';
-    variables.forEach((variable, index) => {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = `var-${variable}`;
-        input.placeholder = variable;
-        input.className = 'prompt-input-field';
-        if (index === 0) input.autofocus = true;
-        promptForm.appendChild(input);
-    });
-}

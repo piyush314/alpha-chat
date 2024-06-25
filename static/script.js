@@ -1,14 +1,13 @@
 import { fetchModelsFromOpenAI, sendMessageToOpenAI } from './llm_api.js';
 import {
    storeChatsInLocalStorage,
-   storePromptsInLocalStorage, 
   storeApiKeyInLocalStorage
 } from './localStorage.js';
 
 import { domElements } from './dom_elements.js';
 import  state  from './state.js'; 
 import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
-import { updatePromptList, selectPrompt } from './promptUI.js';
+import { updatePromptList } from './promptUI.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -232,65 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     savePromptButtonHandler();
   };
 
-  // // Parse Variables from Prompt Content
-  // function parseVariables(content) {
-  //   const regex = /{{(\w+)}}/g;
-  //   const variables = new Set();
-  //   let match;
-  //   while ((match = regex.exec(content)) !== null) {
-  //     variables.add(match[1]);
-  //   }
-  //   return Array.from(variables);
-  // }
-
-  // Update Prompt List
-  // function updatePromptList() {
-  //   promptList.innerHTML = '';
-  //   state.prompts.forEach(prompt => {
-  //     const promptItem = createPromptItem(prompt);
-  //     promptList.appendChild(promptItem);
-  //   });
-  // }
-
-  // // Create Prompt Item
-  // function createPromptItem(prompt) {
-  //   const promptItem = document.createElement('div');
-  //   promptItem.classList.add('prompt-item');
-  //   promptItem.textContent = prompt.name;
-  //   promptItem.onclick = () => selectPrompt(prompt);
-  //   return promptItem;
-  // }
-
-  // Select Prompt
-  // function selectPrompt(prompt) {
-  //   console.log('Selected prompt:', prompt);
-  //   state.selectedPrompt = prompt;
-  //   promptContent.textContent = prompt.content;
-  //   generatePromptForm(prompt.variables);
-  //   setInputMode(prompt.variables.length > 0 ? 'prompt' : 'default');
-  // }
-
-  // Generate Prompt Form
-  // function generatePromptForm(variables) {
-  //   promptForm.innerHTML = '';
-  //   variables.forEach((variable, index) => {
-  //     const input = document.createElement('input');
-  //     input.type = 'text';
-  //     input.id = `var-${variable}`;
-  //     input.placeholder = variable;
-  //     input.className = 'prompt-input-field';
-  //     if (index === 0) input.autofocus = true;
-  //     promptForm.appendChild(input);
-  //   });
-  // }
-
-  // Set Input Mode
-  // function setInputMode(mode) {
-  //   state.currentInputMode = mode;
-  //   defaultInput.classList.toggle('active', mode === 'default');
-  //   promptInput.classList.toggle('active', mode === 'prompt');
-  // }
-
+  
   // Send Button Handler
   sendButton.onclick = async () => {
     if (state.isProcessing) return;
@@ -357,20 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function hideApiKeyModal() {
     apiKeyModal.style.display = 'none';
   }
-
-  // function showAddPromptModal() {
-  //   addPromptModal.style.display = 'block';
-  // }
-
-  // function hideAddPromptModal() {
-  //   addPromptModal.style.display = 'none';
-  // }
-
-  // function clearAddPromptForm() {
-  //   promptNameInput.value = '';
-  //   promptContentInput.value = '';
-  // }
-
 
 
   // Initialize the application
