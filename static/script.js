@@ -8,6 +8,7 @@ import { domElements } from './dom_elements.js';
 import  state  from './state.js'; 
 import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
 import { updatePromptList } from './promptUI.js';
+import { addMessage } from './chatRender.js';  // Import addMessage function
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.currentChat = chat;
     currentChatTitle.textContent = chat.title;
     chatMessages.innerHTML = '';
-    chat.messages.forEach(message => addMessage(message.sender, message.text));
+    chat.messages.forEach(message => addMessage(message.sender, message.text, chatMessages));
   }
 
   const isMarkedAvailable = typeof marked !== 'undefined';
@@ -127,41 +128,41 @@ document.addEventListener('DOMContentLoaded', () => {
   marked.use({ renderer });
 
   // Message Display
-  function addMessage(sender, text) {
-    console.log(`Adding message from ${sender}: ${text}`);
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message', `${sender}-message`);
+  // function addMessage(sender, text) {
+  //   console.log(`Adding message from ${sender}: ${text}`);
+  //   const messageElement = document.createElement('div');
+  //   messageElement.classList.add('message', `${sender}-message`);
 
-    if (isMarkedAvailable) {
-      try {
-        // Parse and render the Markdown content
-        let renderedContent = marked.parse(text);
+  //   if (isMarkedAvailable) {
+  //     try {
+  //       // Parse and render the Markdown content
+  //       let renderedContent = marked.parse(text);
 
-        // Process special tags after Markdown rendering
-        renderedContent = processSpecialTags(renderedContent);
-        // Process maths 
-        renderedContent = renderMath(renderedContent);
+  //       // Process special tags after Markdown rendering
+  //       renderedContent = processSpecialTags(renderedContent);
+  //       // Process maths 
+  //       renderedContent = renderMath(renderedContent);
 
-        messageElement.innerHTML = renderedContent;
+  //       messageElement.innerHTML = renderedContent;
 
-        // Apply syntax highlighting to code blocks
-        if (typeof hljs !== 'undefined') {
-          messageElement.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightElement(block);
-          });
-        }
-      } catch (error) {
-        console.error('Error parsing Markdown:', error);
-        messageElement.textContent = text;
-      }
-    } else {
-      // Fallback to plain text if Markdown parsing is not available
-      messageElement.textContent = text;
-    }
+  //       // Apply syntax highlighting to code blocks
+  //       if (typeof hljs !== 'undefined') {
+  //         messageElement.querySelectorAll('pre code').forEach((block) => {
+  //           hljs.highlightElement(block);
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error('Error parsing Markdown:', error);
+  //       messageElement.textContent = text;
+  //     }
+  //   } else {
+  //     // Fallback to plain text if Markdown parsing is not available
+  //     messageElement.textContent = text;
+  //   }
 
-    chatMessages.appendChild(messageElement);
-    scrollToBottom(chatMessages);
-  }
+  //   chatMessages.appendChild(messageElement);
+  //   scrollToBottom(chatMessages);
+  // }
 
   // Process special tags
   function processSpecialTags(content) {
@@ -249,16 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (message) {
         setProcessingState(true);
         try {
-            addMessage('user', message);
+            addMessage('user', message, chatMessages);
             state.currentChat.messages.push({ sender: 'user', text: message });
             clearInputs();
 
             const response = await sendMessageToOpenAI(message, state.selectedModel, state.apiKey);
-            addMessage('bot', response);
+            addMessage('bot', response, chatMessages);
             state.currentChat.messages.push({ sender: 'bot', text: response });
         } catch (error) {
             console.error('Error in send process:', error);
-            addMessage('bot', 'Sorry, I encountered an error. Please try again.');
+            addMessage('bot', 'Sorry, I encountered an error. Please try again.', chatMessages);
         } finally {
             setProcessingState(false);
         }
