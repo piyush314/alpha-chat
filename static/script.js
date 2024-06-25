@@ -1,8 +1,7 @@
 import { fetchModelsFromOpenAI, sendMessageToOpenAI } from './llm_api.js';
 import {
-  loadChatsFromLocalStorage, storeChatsInLocalStorage,
-  loadPromptsFromLocalStorage, storePromptsInLocalStorage, 
-  getApiKeyFromLocalStorage,
+   storeChatsInLocalStorage,
+   storePromptsInLocalStorage, 
   storeApiKeyInLocalStorage
 } from './localStorage.js';
 
@@ -19,22 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
      promptInput, loadingIndicator } = domElements;
 
 
-  // Application State
-  // let state.currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
-  // let state.chats = loadChatsFromLocalStorage() || [];
-  // let state.apiKey = getApiKeyFromLocalStorage();
-  let selectedModel = 'gpt-3.5-turbo';
-  let prompts = loadPromptsFromLocalStorage() || [];
-  let currentInputMode = 'default';
-  const defaultPrompt = { name: 'Default', content: '{{user-input}}', variables: ['user-input'] };
-  let selectedPrompt = defaultPrompt;
-  let isProcessing = false;
-
-  // // Load data from localStorage
-  // state.chats = loadChatsFromLocalStorage() || [];
-  // state.state.apiKey = getApiKeyFromLocalStorage();
-  // state.prompts = loadPromptsFromLocalStorage() || [];
-  // state.selectedPrompt = state.defaultPrompt;
 
   // Initialize API Key Modal if needed
   if (!state.apiKey) {
@@ -73,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   modelSelect.onchange = (e) => {
-    selectedModel = e.target.value;
+    state.selectedModel = e.target.value;
   };
 
   // Fetch Models if API Key Exists
@@ -247,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = promptContentInput.value.trim();
     if (name && content) {
       const newPrompt = { name, content, variables: parseVariables(content) };
-      prompts.push(newPrompt);
-      storePromptsInLocalStorage(prompts);
+      state.prompts.push(newPrompt);
+      storePromptsInLocalStorage(state.prompts);
       updatePromptList();
       hideAddPromptModal();
       clearAddPromptForm();
@@ -269,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Update Prompt List
   function updatePromptList() {
     promptList.innerHTML = '';
-    prompts.forEach(prompt => {
+    state.prompts.forEach(prompt => {
       const promptItem = createPromptItem(prompt);
       promptList.appendChild(promptItem);
     });
@@ -286,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Select Prompt
   function selectPrompt(prompt) {
-    selectedPrompt = prompt;
+    state.selectedPrompt = prompt;
     promptContent.textContent = prompt.content;
     generatePromptForm(prompt.variables);
     setInputMode(prompt.variables.length > 1 ? 'prompt' : 'default');
@@ -308,17 +291,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set Input Mode
   function setInputMode(mode) {
-    currentInputMode = mode;
+    state.currentInputMode = mode;
     defaultInput.classList.toggle('active', mode === 'default');
     promptInput.classList.toggle('active', mode === 'prompt');
   }
 
   // Send Button Handler
   sendButton.onclick = async () => {
-    if (isProcessing) return;
+    if (state.isProcessing) return;
 
     let message;
-    if (currentInputMode === 'default') {
+    if (state.currentInputMode === 'default') {
       message = userInput.value;
     } else {
       message = constructPromptMessage();
@@ -331,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentChat.messages.push({ sender: 'user', text: message });
         clearInputs();
 
-        const response = await sendMessageToOpenAI(message, selectedModel, state.apiKey);
+        const response = await sendMessageToOpenAI(message, state.selectedModel, state.apiKey);
         addMessage('bot', response); // This will now render Markdown
         state.currentChat.messages.push({ sender: 'bot', text: response });
       } catch (error) {
@@ -345,8 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Construct Prompt Message
   function constructPromptMessage() {
-    let promptText = selectedPrompt.content;
-    selectedPrompt.variables.forEach(variable => {
+    let promptText = state.selectedPrompt.content;
+    state.selectedPrompt.variables.forEach(variable => {
       const input = document.getElementById(`var-${variable}`);
       promptText = promptText.replace(`{{${variable}}}`, input.value.trim());
     });
@@ -361,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set Processing State
   function setProcessingState(processing) {
-    isProcessing = processing;
+    state.isProcessing = processing;
     sendButton.disabled = processing;
     loadingIndicator.classList.toggle('hidden', !processing);
   }
@@ -397,6 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Enter Keypress Handler
   userInput.onkeypress = (e) => {
-    if (e.key === 'Enter' && !isProcessing) sendButton.onclick();
+    if (e.key === 'Enter' && !state.isProcessing) sendButton.onclick();
   };
 });
