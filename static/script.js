@@ -7,9 +7,11 @@ import {
 import { domElements } from './dom_elements.js';
 import  state  from './state.js'; 
 import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
-import { updatePromptList } from './promptUI.js';
+import { updatePromptList, setInputMode } from './promptUI.js';
 import { addMessage } from './chatRender.js';  // Import addMessage function
 import { updateChatList } from './chatListManager.js';
+import { initializeModelSelection, setupModelDropdownHandlers } from './modelParamsUI.js';
+import { saveCurrentChat, saveChatButtonHandler } from './chatUtils.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,64 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
      promptInput, loadingIndicator } = domElements;
 
 
-
-  // Initialize API Key Modal if needed
-  if (!state.apiKey) {
+  // Setup Model Dropdown and Handlers
+  if (state.apiKey) {
+    initializeModelSelection(state.apiKey);
+    setupModelDropdownHandlers((selectedModel) => {
+      state.selectedModel = selectedModel;
+    });
+  }
+  else 
+  {
     showApiKeyModal();
   }
-
-  // API Key Submission Handler
   submitApiKeyButton.onclick = () => {
     state.apiKey = apiKeyInput.value.trim();
     if (state.apiKey) {
       storeApiKeyInLocalStorage(state.apiKey);
-      hideApiKeyModal();
-      fetchAvailableModels();
+      apiKeyModal.style.display = 'none';
+      initializeModelSelection(state.apiKey);
     }
   };
 
-  // Model Fetching and Dropdown Population
-  async function fetchAvailableModels() {
-    try {
-      const models = await fetchModelsFromOpenAI(state.apiKey);
-      populateModelDropdown(models);
-    } catch (error) {
-      console.error('Error fetching models:', error);
-    }
-  }
 
 
-  function populateModelDropdown(models) {
-    modelSelect.innerHTML = '<option value="">Select a model</option>';
-    models.forEach(model => {
-      const option = document.createElement('option');
-      option.value = model.id;
-      option.textContent = model.id;
-      modelSelect.appendChild(option);
-    });
-  }
-
-  modelSelect.onchange = (e) => {
-    state.selectedModel = e.target.value;
-  };
-
-  // Fetch Models if API Key Exists
-  if (state.apiKey) {
-    fetchAvailableModels();
-  }
-
-
-  // Chat Saving
-  function saveCurrentChat() {
-    const existingIndex = state.chats.findIndex(chat => chat.id === state.currentChat.id);
-    if (existingIndex !== -1) {
-      state.chats[existingIndex] = state.currentChat;
-    } else {
-      state.chats.push(state.currentChat);
-    }
-    storeChatsInLocalStorage(state.chats);
-    updateChatList();
-  }
 
   // New Chat Button Handler
   newChatButton.onclick = () => {
@@ -91,12 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Save Chat Button Handler
   saveChatButton.onclick = () => {
-    const title = prompt('Enter a title for this chat:', state.currentChat.title);
-    if (title) {
-      state.currentChat.title = title;
-      currentChatTitle.textContent = title;
-      saveCurrentChat();
-    }
+    saveChatButtonHandler();
   };
 
   // Add Prompt Button Handler
