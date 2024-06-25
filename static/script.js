@@ -8,6 +8,7 @@ import {
 import { domElements } from './dom_elements.js';
 import  state  from './state.js'; 
 import { showAddPromptModal, savePromptButtonHandler } from './addNewPrompt.js';
+import { updatePromptList, selectPrompt } from './promptUI.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -243,52 +244,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // }
 
   // Update Prompt List
-  function updatePromptList() {
-    promptList.innerHTML = '';
-    state.prompts.forEach(prompt => {
-      const promptItem = createPromptItem(prompt);
-      promptList.appendChild(promptItem);
-    });
-  }
+  // function updatePromptList() {
+  //   promptList.innerHTML = '';
+  //   state.prompts.forEach(prompt => {
+  //     const promptItem = createPromptItem(prompt);
+  //     promptList.appendChild(promptItem);
+  //   });
+  // }
 
   // // Create Prompt Item
-  function createPromptItem(prompt) {
-    const promptItem = document.createElement('div');
-    promptItem.classList.add('prompt-item');
-    promptItem.textContent = prompt.name;
-    promptItem.onclick = () => selectPrompt(prompt);
-    return promptItem;
-  }
+  // function createPromptItem(prompt) {
+  //   const promptItem = document.createElement('div');
+  //   promptItem.classList.add('prompt-item');
+  //   promptItem.textContent = prompt.name;
+  //   promptItem.onclick = () => selectPrompt(prompt);
+  //   return promptItem;
+  // }
 
   // Select Prompt
-  function selectPrompt(prompt) {
-    console.log('Selected prompt:', prompt);
-    state.selectedPrompt = prompt;
-    promptContent.textContent = prompt.content;
-    generatePromptForm(prompt.variables);
-    setInputMode(prompt.variables.length > 0 ? 'prompt' : 'default');
-  }
+  // function selectPrompt(prompt) {
+  //   console.log('Selected prompt:', prompt);
+  //   state.selectedPrompt = prompt;
+  //   promptContent.textContent = prompt.content;
+  //   generatePromptForm(prompt.variables);
+  //   setInputMode(prompt.variables.length > 0 ? 'prompt' : 'default');
+  // }
 
   // Generate Prompt Form
-  function generatePromptForm(variables) {
-    promptForm.innerHTML = '';
-    variables.forEach((variable, index) => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = `var-${variable}`;
-      input.placeholder = variable;
-      input.className = 'prompt-input-field';
-      if (index === 0) input.autofocus = true;
-      promptForm.appendChild(input);
-    });
-  }
+  // function generatePromptForm(variables) {
+  //   promptForm.innerHTML = '';
+  //   variables.forEach((variable, index) => {
+  //     const input = document.createElement('input');
+  //     input.type = 'text';
+  //     input.id = `var-${variable}`;
+  //     input.placeholder = variable;
+  //     input.className = 'prompt-input-field';
+  //     if (index === 0) input.autofocus = true;
+  //     promptForm.appendChild(input);
+  //   });
+  // }
 
   // Set Input Mode
-  function setInputMode(mode) {
-    state.currentInputMode = mode;
-    defaultInput.classList.toggle('active', mode === 'default');
-    promptInput.classList.toggle('active', mode === 'prompt');
-  }
+  // function setInputMode(mode) {
+  //   state.currentInputMode = mode;
+  //   defaultInput.classList.toggle('active', mode === 'default');
+  //   promptInput.classList.toggle('active', mode === 'prompt');
+  // }
 
   // Send Button Handler
   sendButton.onclick = async () => {
