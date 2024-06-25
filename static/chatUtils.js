@@ -37,3 +37,10 @@ import { setInputMode } from './promptUI.js';
     setInputMode('default');
     // saveCurrentChat();
   }
+
+  export   function clearInputs() {
+    const userInput = document.getElementById('user-input');
+    const promptForm = document.getElementById('prompt-form');
+    userInput.value = '';
+    promptForm.reset();
+  }

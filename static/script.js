@@ -11,7 +11,7 @@ import { updatePromptList, setInputMode } from './promptUI.js';
 import { addMessage } from './chatRender.js';  // Import addMessage function
 import { updateChatList } from './chatListManager.js';
 import { initializeModelSelection, setupModelDropdownHandlers } from './modelParamsUI.js';
-import { saveChatButtonHandler, newChatButtonHandler } from './chatUtils.js';
+import { saveChatButtonHandler, newChatButtonHandler, clearInputs } from './chatUtils.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -112,11 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 
-  // Clear Inputs
-  function clearInputs() {
-    userInput.value = '';
-    promptForm.reset();
-  }
 
   // Set Processing State
   function setProcessingState(processing) {
