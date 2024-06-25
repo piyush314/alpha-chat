@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAI Chatbot with Dynamic Prompts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
+
+</head>
+<body>
+  <div id="app-container" class="container">
+    <!-- Sidebar for chat management -->
+    <div id="sidebar" class="sidebar">
+      <h2 class="sidebar-title">Chat Management</h2>
+      <button id="new-chat" class="sidebar-button">
+        <i class="fas fa-plus"></i> New Chat
+      </button>
+      <div id="chat-list" class="chat-list">
+        <!-- Chats will be listed here -->
+      </div>
+    </div>
+
+    <!-- Main content area for chat interaction -->
+    <div id="main-content" class="main-content">
+      <!-- Chat header for title and actions -->
+      <div id="chat-header" class="chat-header">
+        <span id="current-chat-title" class="chat-title">New Chat</span>
+        <select id="model-select" class="model-select">
+          <option value="">Select a model</option>
+        </select>
+        <button id="save-chat" class="chat-button">
+          <i class="fas fa-save"></i> Save Chat
+        </button>
+      </div>
+
+      <!-- Display area for chat messages -->
+      <div id="chat-messages" class="chat-messages">
+        <!-- Messages will be displayed here -->
+      </div>
+
+      <!-- Dynamic input area for user messages and prompt variables -->
+      <div id="dynamic-input-area" class="dynamic-input-area">
+        <!-- Default single input mode -->
+        <div id="default-input" class="input-mode active">
+          <textarea id="user-input" placeholder="Type your message..." class="chat-input-field" rows="3"></textarea>
+        </div>
+        <!-- Multi-variable prompt input mode -->
+        <div id="prompt-input" class="input-mode">
+          <form id="prompt-form">
+            <!-- Prompt variable inputs will be dynamically added here -->
+          </form>
+        </div>
+        <button id="send-button" class="chat-button">
+          <i class="fas fa-paper-plane"></i> Send
+        </button>
+        <div id="loading-indicator" class="loading-indicator hidden">
+          <i class="fas fa-spinner fa-spin"></i> Processing...
+        </div>
+      </div>
+    </div>
+
+    <!-- Prompt column -->
+    <div id="prompt-column" class="prompt-column">
+      <h2 class="prompt-title">Prompts</h2>
+      <button id="add-prompt-button" class="prompt-button">
+        <i class="fas fa-plus"></i> Add Prompt
+      </button>
+      <div id="prompt-list" class="prompt-list">
+        <!-- Prompts will be listed here -->
+      </div>
+      <div id="selected-prompt" class="selected-prompt">
+        <h3>Selected Prompt</h3>
+        <pre id="prompt-content"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for prompting API key input -->
+  <div id="api-key-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">Enter OpenAI API Key</h2>
+      <input type="password" id="api-key-input" placeholder="Enter your API key" class="modal-input">
+      <button id="submit-api-key" class="modal-button">Submit</button>
+    </div>
+  </div>
+
+  <!-- Modal for adding prompts -->
+  <div id="add-prompt-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">Add New Prompt</h2>
+      <input type="text" id="prompt-name-input" placeholder="Enter prompt name" class="modal-input">
+      <textarea id="prompt-content-input" placeholder="Enter prompt content" class="modal-textarea"></textarea>
+      <button id="save-prompt-button" class="modal-button">Save Prompt</button>
+    </div>
+  </div>
+
+  <!-- Include external JavaScript libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- Include application's JavaScript logic -->
+  <script type="module", src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
