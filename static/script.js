@@ -7,11 +7,12 @@ import {
 } from './localStorage.js';
 
 import { domElements } from './dom_elements.js';
+import  state  from './state.js'; 
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const { chatList, chatMessages, userInput, sendButton, newChatButton,
-     saveChatButton, currentChatTitle, apiKeyModal, apiKeyInput, 
+  const { chatList, chatMessages, userInput, sendButton, newChatButton, saveChatButton,
+     currentChatTitle, apiKeyModal, apiKeyInput, 
      submitApiKeyButton, modelSelect, addPromptButton, addPromptModal, 
      promptNameInput, promptContentInput, savePromptButton, promptList, 
      promptContent, promptForm, dynamicInputArea, defaultInput, 
@@ -19,9 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // Application State
-  let currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
-  let chats = loadChatsFromLocalStorage() || [];
-  let apiKey = getApiKeyFromLocalStorage();
+  // let state.currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
+  // let state.chats = loadChatsFromLocalStorage() || [];
+  // let state.apiKey = getApiKeyFromLocalStorage();
   let selectedModel = 'gpt-3.5-turbo';
   let prompts = loadPromptsFromLocalStorage() || [];
   let currentInputMode = 'default';
@@ -29,16 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedPrompt = defaultPrompt;
   let isProcessing = false;
 
+  // // Load data from localStorage
+  // state.chats = loadChatsFromLocalStorage() || [];
+  // state.state.apiKey = getApiKeyFromLocalStorage();
+  // state.prompts = loadPromptsFromLocalStorage() || [];
+  // state.selectedPrompt = state.defaultPrompt;
+
   // Initialize API Key Modal if needed
-  if (!apiKey) {
+  if (!state.apiKey) {
     showApiKeyModal();
   }
 
   // API Key Submission Handler
   submitApiKeyButton.onclick = () => {
-    apiKey = apiKeyInput.value.trim();
-    if (apiKey) {
-      storeApiKeyInLocalStorage(apiKey);
+    state.apiKey = apiKeyInput.value.trim();
+    if (state.apiKey) {
+      storeApiKeyInLocalStorage(state.apiKey);
       hideApiKeyModal();
       fetchAvailableModels();
     }
@@ -47,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Model Fetching and Dropdown Population
   async function fetchAvailableModels() {
     try {
-      const models = await fetchModelsFromOpenAI(apiKey);
+      const models = await fetchModelsFromOpenAI(state.apiKey);
       populateModelDropdown(models);
     } catch (error) {
       console.error('Error fetching models:', error);
@@ -70,14 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Fetch Models if API Key Exists
-  if (apiKey) {
+  if (state.apiKey) {
     fetchAvailableModels();
   }
 
   // Chat List Management
   function updateChatList() {
     chatList.innerHTML = '';
-    chats.forEach(chat => {
+    state.chats.forEach(chat => {
       const chatItem = createChatItem(chat);
       chatList.appendChild(chatItem);
     });
@@ -93,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Chat Loading
   function loadChat(chat) {
-    currentChat = chat;
+    state.currentChat = chat;
     currentChatTitle.textContent = chat.title;
     chatMessages.innerHTML = '';
     chat.messages.forEach(message => addMessage(message.sender, message.text));
@@ -201,19 +208,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Chat Saving
   function saveCurrentChat() {
-    const existingIndex = chats.findIndex(chat => chat.id === currentChat.id);
+    const existingIndex = state.chats.findIndex(chat => chat.id === state.currentChat.id);
     if (existingIndex !== -1) {
-      chats[existingIndex] = currentChat;
+      state.chats[existingIndex] = state.currentChat;
     } else {
-      chats.push(currentChat);
+      state.chats.push(state.currentChat);
     }
-    storeChatsInLocalStorage(chats);
+    storeChatsInLocalStorage(state.chats);
     updateChatList();
   }
 
   // New Chat Button Handler
   newChatButton.onclick = () => {
-    currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
+    state.currentChat = { id: Date.now(), title: 'New Chat', messages: [] };
     currentChatTitle.textContent = 'New Chat';
     chatMessages.innerHTML = '';
     setInputMode('default');
@@ -221,9 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Save Chat Button Handler
   saveChatButton.onclick = () => {
-    const title = prompt('Enter a title for this chat:', currentChat.title);
+    const title = prompt('Enter a title for this chat:', state.currentChat.title);
     if (title) {
-      currentChat.title = title;
+      state.currentChat.title = title;
       currentChatTitle.textContent = title;
       saveCurrentChat();
     }
@@ -321,12 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setProcessingState(true);
       try {
         addMessage('user', message); // This will now render Markdown
-        currentChat.messages.push({ sender: 'user', text: message });
+        state.currentChat.messages.push({ sender: 'user', text: message });
         clearInputs();
 
-        const response = await sendMessageToOpenAI(message, selectedModel, apiKey);
+        const response = await sendMessageToOpenAI(message, selectedModel, state.apiKey);
         addMessage('bot', response); // This will now render Markdown
-        currentChat.messages.push({ sender: 'bot', text: response });
+        state.currentChat.messages.push({ sender: 'bot', text: response });
       } catch (error) {
         console.error('Error in send process:', error);
         addMessage('bot', 'Sorry, I encountered an error. Please try again.');
