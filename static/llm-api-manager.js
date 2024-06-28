@@ -26,8 +26,48 @@ export const defaultLLMConfigs = [
     return configs;
   }
   
-  // We'll implement the test function in a later step
-  export async function testLLMConfig(config) {
-    console.log('Testing LLM config:', config);
-    return true; // Placeholder
+ // Replace the placeholder testLLMConfig function with this implementation
+export async function testLLMConfig(config) {
+    try {
+      const response = await axios.post(
+        config.endpoint,
+        {
+          messages: [{ role: 'user', content: config.testPrompt || 'Test' }],
+          model: config.defaultModel || 'gpt-3.5-turbo', // You may want to make this configurable
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${config.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data.choices[0].message.content.trim() !== '';
+    } catch (error) {
+      console.error('Error testing LLM config:', error);
+      return false;
+    }
+  }
+
+  // Add this new function to send messages using the selected LLM config
+export async function sendMessageToLLM(message, model, config) {
+    try {
+      const response = await axios.post(
+        config.endpoint,
+        {
+          messages: [{ role: 'user', content: message }],
+          model: model,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${config.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data.choices[0].message.content;
+    } catch (error) {
+      console.error('Error sending message to LLM:', error);
+      throw error;
+    }
   }

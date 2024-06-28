@@ -14,7 +14,9 @@ import { initializeModelSelection, setupModelDropdownHandlers } from './modelPar
 import { saveChatButtonHandler, newChatButtonHandler, clearInputs } from './chatUtils.js';
 // import { saveLLMConfig, getLLMConfigs, testLLMConfig } from './llm-api-manager.js';
 
-import { defaultLLMConfigs, saveLLMConfig, testLLMConfig } from './llm-api-manager.js';
+// import { defaultLLMConfigs, saveLLMConfig, testLLMConfig } from './llm-api-manager.js';
+import { defaultLLMConfigs, saveLLMConfig, testLLMConfig, sendMessageToLLM } from './llm-api-manager.js';
+
 
 // Add this function to handle the modal
 function showAddLLMConfigModal() {
@@ -82,38 +84,37 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   
-  // Send Button Handler
   sendButton.onclick = async () => {
     if (state.isProcessing) return;
 
     let message;
     if (state.currentInputMode === 'prompt' && state.selectedPrompt.variables.length > 0) {
-        message = constructPromptMessage();
+      message = constructPromptMessage();
     } else {
-        // This will handle both the default mode and prompt mode with no variables
-        const promptText = state.selectedPrompt.content;
-        const userInputText = userInput.value.trim();
-        message = `${promptText}\n\n\`\`\`\n${userInputText}\n\`\`\``;
+      const promptText = state.selectedPrompt.content;
+      const userInputText = userInput.value.trim();
+      message = `${promptText}\n\n\`\`\`\n${userInputText}\n\`\`\``;
     }
 
     if (message) {
-        setProcessingState(true);
-        try {
-            addMessage('user', message, chatMessages);
-            state.currentChat.messages.push({ sender: 'user', text: message });
-            clearInputs();
+      setProcessingState(true);
+      try {
+        addMessage('user', message, chatMessages);
+        state.currentChat.messages.push({ sender: 'user', text: message });
+        clearInputs();
 
-            const response = await sendMessageToOpenAI(message, state.selectedModel, state.apiKey);
-            addMessage('bot', response, chatMessages);
-            state.currentChat.messages.push({ sender: 'bot', text: response });
-        } catch (error) {
-            console.error('Error in send process:', error);
-            addMessage('bot', 'Sorry, I encountered an error. Please try again.', chatMessages);
-        } finally {
-            setProcessingState(false);
-        }
+        const config = state.llmConfigs[state.selectedLLM];
+        const response = await sendMessageToLLM(message, state.selectedModel, config);
+        addMessage('bot', response, chatMessages);
+        state.currentChat.messages.push({ sender: 'bot', text: response });
+      } catch (error) {
+        console.error('Error in send process:', error);
+        addMessage('bot', 'Sorry, I encountered an error. Please try again.', chatMessages);
+      } finally {
+        setProcessingState(false);
+      }
     }
-};
+  };
 
   // Construct Prompt Message
   function constructPromptMessage() {
@@ -211,11 +212,16 @@ const llmSelect = document.getElementById('llm-select');
 
   // Add this function to the bottom of the file
   function handleLLMChange(event) {
-    state.selectedLLM = event.target.value;
+  state.selectedLLM = event.target.value;
+  const config = state.llmConfigs[state.selectedLLM];
+  if (config) {
+    state.apiKey = config.apiKey;
+    state.selectedModel = config.defaultModel;
+    // You may want to update the model selection dropdown here as well
     console.log('Selected LLM changed:', state.selectedLLM);
-    // We'll implement the full functionality in later steps
   }
-  
+}
+
 
   window.testLLMManager = {
     saveConfig: function(config) {
