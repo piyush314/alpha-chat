@@ -12,7 +12,7 @@ import { addMessage } from './chatRender.js';  // Import addMessage function
 import { updateChatList } from './chatListManager.js';
 import { initializeModelSelection, setupModelDropdownHandlers } from './modelParamsUI.js';
 import { saveChatButtonHandler, newChatButtonHandler, clearInputs } from './chatUtils.js';
-
+import { saveLLMConfig, getLLMConfigs, testLLMConfig } from './llm-api-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -139,4 +139,35 @@ document.addEventListener('DOMContentLoaded', () => {
   userInput.onkeypress = (e) => {
     if (e.key === 'Enter' && !state.isProcessing) sendButton.onclick();
   };
+
+
+const llmSelect = document.getElementById('llm-select');
+  llmSelect.addEventListener('change', handleLLMChange);
+
 });
+
+
+  // Add this function to the bottom of the file
+  function handleLLMChange(event) {
+    state.selectedLLM = event.target.value;
+    console.log('Selected LLM changed:', state.selectedLLM);
+    // We'll implement the full functionality in later steps
+  }
+  
+
+  window.testLLMManager = {
+    saveConfig: function(config) {
+      saveLLMConfig(config);
+      console.log('Config saved. Current configs:', getLLMConfigs());
+    },
+    
+    getConfigs: function() {
+      return getLLMConfigs();
+    },
+    
+    testConfig: async function(config) {
+      const result = await testLLMConfig(config);
+      console.log('Test result:', result);
+      return result;
+    }
+  };
