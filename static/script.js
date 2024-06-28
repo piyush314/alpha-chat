@@ -149,6 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize the application
   updateChatList();
   updatePromptList();
+    // Add this line to update the LLM select dropdown when the page loads
+    updateLLMSelect();
 
   // Enter Keypress Handler
   userInput.onkeypress = (e) => {
@@ -240,11 +242,17 @@ const llmSelect = document.getElementById('llm-select');
     }
   };
 
-  function updateLLMSelect() {
-    const llmSelect = document.getElementById('llm-select');
-    llmSelect.innerHTML = Object.keys(state.llmConfigs)
+  // Update the updateLLMSelect function to handle cases where there are no configs
+function updateLLMSelect() {
+  const llmSelect = document.getElementById('llm-select');
+  const configNames = Object.keys(state.llmConfigs);
+  
+  if (configNames.length > 0) {
+    llmSelect.innerHTML = configNames
       .map(name => `<option value="${name}">${name}</option>`)
       .join('');
     llmSelect.value = state.selectedLLM;
+  } else {
+    llmSelect.innerHTML = '<option value="">No LLM configs available</option>';
   }
-  
+}
