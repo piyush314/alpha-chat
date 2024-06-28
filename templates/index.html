@@ -42,6 +42,10 @@
         <button id="save-chat" class="chat-button">
           <i class="fas fa-save"></i> Save Chat
         </button>
+
+        <button id="add-llm-config" class="chat-button">
+          <i class="fas fa-plus"></i> Add LLM Config
+        </button>
       </div>
 
       <!-- Display area for chat messages -->
@@ -105,6 +109,23 @@
     </div>
   </div>
 
+  <div id="add-llm-config-modal" class="modal">
+    <div class="modal-content">
+      <h2>Add LLM Configuration</h2>
+      <select id="llm-preset">
+        <option value="OpenAI">OpenAI</option>
+        <option value="Groq">Groq</option>
+        <option value="custom">Custom</option>
+      </select>
+      <input type="text" id="llm-name" placeholder="LLM Name">
+      <input type="text" id="llm-endpoint" placeholder="API Endpoint">
+      <input type="password" id="llm-api-key" placeholder="API Key">
+      <input type="text" id="llm-default-model" placeholder="Default Model">
+      <button id="test-llm-config">Test Configuration</button>
+      <button id="save-llm-config">Save Configuration</button>
+    </div>
+  </div>
+  
   <!-- Include external JavaScript libraries -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- Include application's JavaScript logic -->

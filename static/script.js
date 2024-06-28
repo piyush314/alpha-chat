@@ -12,7 +12,21 @@ import { addMessage } from './chatRender.js';  // Import addMessage function
 import { updateChatList } from './chatListManager.js';
 import { initializeModelSelection, setupModelDropdownHandlers } from './modelParamsUI.js';
 import { saveChatButtonHandler, newChatButtonHandler, clearInputs } from './chatUtils.js';
-import { saveLLMConfig, getLLMConfigs, testLLMConfig } from './llm-api-manager.js';
+// import { saveLLMConfig, getLLMConfigs, testLLMConfig } from './llm-api-manager.js';
+
+import { defaultLLMConfigs, saveLLMConfig, testLLMConfig } from './llm-api-manager.js';
+
+// Add this function to handle the modal
+function showAddLLMConfigModal() {
+  const modal = document.getElementById('add-llm-config-modal');
+  modal.style.display = 'block';
+}
+
+// Add this function to hide the modal
+function hideAddLLMConfigModal() {
+  const modal = document.getElementById('add-llm-config-modal');
+  modal.style.display = 'none';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -144,6 +158,54 @@ document.addEventListener('DOMContentLoaded', () => {
 const llmSelect = document.getElementById('llm-select');
   llmSelect.addEventListener('change', handleLLMChange);
 
+  const addLLMConfigButton = document.getElementById('add-llm-config');
+  addLLMConfigButton.addEventListener('click', showAddLLMConfigModal);
+
+  const llmPreset = document.getElementById('llm-preset');
+  const llmName = document.getElementById('llm-name');
+  const llmEndpoint = document.getElementById('llm-endpoint');
+  const llmApiKey = document.getElementById('llm-api-key');
+  const llmDefaultModel = document.getElementById('llm-default-model');
+  const testButton = document.getElementById('test-llm-config');
+  const saveButton = document.getElementById('save-llm-config');
+
+  llmPreset.addEventListener('change', () => {
+    const selectedConfig = defaultLLMConfigs.find(config => config.name === llmPreset.value);
+    if (selectedConfig) {
+      llmName.value = selectedConfig.name;
+      llmEndpoint.value = selectedConfig.endpoint;
+      llmDefaultModel.value = '';
+    } else {
+      llmName.value = '';
+      llmEndpoint.value = '';
+      llmDefaultModel.value = '';
+    }
+  });
+
+  testButton.addEventListener('click', async () => {
+    const config = {
+      name: llmName.value,
+      endpoint: llmEndpoint.value,
+      apiKey: llmApiKey.value,
+      defaultModel: llmDefaultModel.value,
+    };
+    const isWorking = await testLLMConfig(config);
+    alert(isWorking ? 'Configuration is working!' : 'Configuration test failed.');
+  });
+
+  saveButton.addEventListener('click', () => {
+    const config = {
+      name: llmName.value,
+      endpoint: llmEndpoint.value,
+      apiKey: llmApiKey.value,
+      defaultModel: llmDefaultModel.value,
+    };
+    saveLLMConfig(config);
+    state.llmConfigs[config.name] = config;
+    updateLLMSelect();
+    hideAddLLMConfigModal();
+  });
+
 });
 
 
@@ -171,3 +233,12 @@ const llmSelect = document.getElementById('llm-select');
       return result;
     }
   };
+
+  function updateLLMSelect() {
+    const llmSelect = document.getElementById('llm-select');
+    llmSelect.innerHTML = Object.keys(state.llmConfigs)
+      .map(name => `<option value="${name}">${name}</option>`)
+      .join('');
+    llmSelect.value = state.selectedLLM;
+  }
+  
