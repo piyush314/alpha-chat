@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateChatList();
   updatePromptList();
     // Add this line to update the LLM select dropdown when the page loads
-    updateLLMSelect();
+  updateLLMSelect();
 
   // Enter Keypress Handler
   userInput.onkeypress = (e) => {
@@ -209,6 +209,15 @@ const llmSelect = document.getElementById('llm-select');
     hideAddLLMConfigModal();
   });
 
+  // Add event listener for the close button
+  const closeButton = document.querySelector('.close-button');
+  closeButton.addEventListener('click', hideAddLLMConfigModal);
+
+  // Add event listener for the edit prompt button
+  const editPromptButton = document.getElementById('edit-prompt-button');
+  editPromptButton.addEventListener('click', editSelectedPrompt);
+
+
 });
 
 
@@ -255,4 +264,31 @@ function updateLLMSelect() {
   } else {
     llmSelect.innerHTML = '<option value="">No LLM configs available</option>';
   }
+}
+
+
+// Add this function to handle editing the selected prompt
+function editSelectedPrompt() {
+  if (state.selectedPrompt) {
+    // For now, just log the action. We'll implement the edit functionality later.
+    console.log('Editing prompt:', state.selectedPrompt);
+  }
+}
+
+// Update the selectPrompt function to highlight the selected prompt
+function selectPrompt(prompt) {
+  const promptContent = document.getElementById('prompt-content');
+  state.selectedPrompt = prompt;
+  promptContent.textContent = prompt.content;
+  
+  // Remove 'selected' class from all prompt items
+  document.querySelectorAll('.prompt-item').forEach(item => item.classList.remove('selected'));
+  
+  // Add 'selected' class to the clicked prompt item
+  const selectedItem = document.querySelector(`.prompt-item[data-name="${prompt.name}"]`);
+  if (selectedItem) {
+    selectedItem.classList.add('selected');
+  }
+  
+  generatePromptForm(prompt.variables);
 }
