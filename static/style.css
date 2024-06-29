@@ -1,0 +1,626 @@
+:root {
+    
+    --base03: #002b36; /* Dark background */
+    --base02: #073642; /* Slightly darker grey */
+    --base01: #586e75; /* Dark grey */
+    --base00: #93a1a1; /* Light grey */
+    --base0: #eee8d5; /* Lightest background */
+    --base1: #fdf6e3; /* Lighter yellow */
+    --base2: #b58900; /* Yellow */
+    --base3: #cb4b16; /* Orange */
+    --cyan: #2aa198; /* Cyan */
+    --green: #859900; /* Green */
+    --blue: #008080; /* Blue */
+    --magenta: #d33682; /* Magenta */
+    --violet: #6c71c4; /* Violet */
+    --red: #dc322f; /* Red */
+
+    /* --font-primary: 'JetBrains Mono', monospace;  */
+--bg-color: var( --base0 );
+--container-bg: var( --base1 );
+--input-bg: var( --base00 );
+--text-color: var(--base03);
+--primary-color: var(--blue);
+--secondary-color: var(--yellow);
+--accent-color: var(--cyan);
+--error-color: var(--red);
+--font-primary: Roboto, Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body,
+html {
+margin: 0;
+padding: 0;
+height: 100%;
+font-family: var(--font-primary);
+background-color: var(--bg-color);
+color: var(--text-color);
+-webkit-font-smoothing: antialiased; /* Improve font rendering on Chrome/Safari */
+-moz-osx-font-smoothing: grayscale; /* Improve font rendering on Firefox */
+}
+
+#app-container {
+display: flex;
+height: 100vh;
+}
+
+#sidebar {
+width: 280px; /* Increased sidebar width for better content visibility */
+background-color: var(--container-bg);
+padding: 30px;
+display: flex;
+flex-direction: column;
+border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#new-chat {
+margin-bottom: 25px;
+padding: 12px 20px;
+background-color: var(--primary-color);
+border: none;
+color: var(--text-color);
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+font-weight: bold;
+transition: all 0.3s ease;
+}
+
+#new-chat:hover {
+background-color: var(--accent-color);
+}
+
+#chat-list {
+overflow-y: auto;
+}
+
+.chat-item {
+padding: 15px;
+margin-bottom: 10px;
+background-color: var(--input-bg);
+cursor: pointer;
+border-radius: 8px;
+transition: background-color 0.3s ease;
+display: flex;
+align-items: center; /* Align items to center for better layout */
+}
+
+.chat-item:hover {
+background-color: var(--primary-color);
+}
+
+.chat-item-title {
+font-size: 16px;
+font-weight: bold;
+margin-right: 10px;
+}
+
+#main-content {
+flex-grow: 1;
+display: flex;
+flex-direction: column;
+}
+
+#chat-header {
+padding: 25px;
+background-color: var(--container-bg);
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#current-chat-title {
+font-size: 20px;
+font-weight: bold;
+}
+
+#save-chat {
+padding: 10px 18px;
+background-color: var(--primary-color);
+border: none;
+color: var(--text-color);
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+font-weight: bold;
+transition: all 0.3s ease;
+}
+
+#save-chat:hover {
+background-color: var(--accent-color);
+}
+
+.model-select {
+padding: 10px 18px;
+background-color: var(--input-bg);
+border: none;
+color: var(--text-color);
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+margin-right: 15px;
+appearance: none; /* Remove default arrow */
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path d='M8 11L3 6l1.5-1.5L8 9.25 12.5 4.75 14 6z' fill='%23fff'/></svg>"); /* Add a custom arrow */
+background-repeat: no-repeat;
+background-position: right 10px center;
+background-size: 12px 12px;
+}
+
+.model-select:focus {
+outline: none;
+box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+#chat-messages {
+flex-grow: 1;
+overflow-y: auto;
+padding: 20px;
+background-color: var(--bg-color);
+}
+
+.message {
+margin-bottom: 18px;
+padding: 12px 20px;
+border-radius: 18px;
+max-width: 70%; /* Reduced max-width for better message spacing */
+word-wrap: break-word;
+position: relative; /* For message bubbles */
+}
+
+.user-message {
+background-color: var(--primary-color);
+align-self: flex-end;
+margin-left: auto;
+/* Add a triangle to the left side of the user message */
+&::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -12px; /* Adjust position as needed */
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent var(--primary-color) transparent transparent;
+}
+}
+
+.bot-message {
+background-color: var(--input-bg);
+align-self: flex-start;
+margin-right: auto;
+/* Add a triangle to the right side of the bot message */
+&::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -12px; /* Adjust position as needed */
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent var(--input-bg);
+}
+}
+
+#chat-input {
+display: flex;
+padding: 20px;
+background-color: var(--container-bg);
+}
+
+#user-input {
+flex-grow: 1;
+padding: 12px;
+margin-right: 15px;
+background-color: var(--input-bg);
+border: none;
+color: var(--text-color);
+border-radius: 8px;
+font-size: 15px;
+transition: all 0.3s ease;
+}
+
+#user-input:focus {
+outline: none;
+box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+#send-button {
+padding: 12px 20px;
+background-color: var(--primary-color);
+border: none;
+color: var(--text-color);
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+font-weight: bold;
+transition: all 0.3s ease;
+}
+
+#send-button:hover {
+background-color: var(--accent-color);
+}
+
+.modal {
+display: none;
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+background-color: var(--container-bg);
+margin: 10% auto; /* Adjusted margin for better positioning */
+padding: 30px;
+border: 1px solid #888;
+width: 350px; /* Increased width for better form visibility */
+border-radius: 12px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#api-key-input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+background-color: var(--input-bg);
+border: none;
+color: var(--text-color);
+border-radius: 8px;
+font-size: 15px;
+}
+
+#submit-api-key {
+padding: 12px 20px;
+background-color: var(--primary-color);
+border: none;
+color: var(--text-color);
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+font-weight: bold;
+transition: all 0.3s ease;
+}
+
+#submit-api-key:hover {
+background-color: var(--accent-color);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+width: 8px;
+}
+
+::-webkit-scrollbar-track {
+background: var(--container-bg);
+}
+
+::-webkit-scrollbar-thumb {
+background: var(--input-bg);
+border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: var(--primary-color);
+}
+
+/* ... (previous styles) ... */
+
+.prompt-column {
+width: 300px;
+padding: 20px;
+border-left: 1px solid #ccc;
+}
+
+.prompt-title {
+margin-bottom: 20px;
+}
+
+.prompt-button {
+display: block;
+width: 100%;
+padding: 10px;
+margin-bottom: 10px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.prompt-list {
+margin-bottom: 20px;
+}
+
+.prompt-item {
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+margin-bottom: 10px;
+cursor: pointer;
+}
+
+.prompt-item:hover {
+background-color: #f0f0f0;
+}
+
+.selected-prompt {
+border: 1px solid #ccc;
+border-radius: 5px;
+padding: 10px;
+}
+
+#prompt-content {
+white-space: pre-wrap;
+margin-bottom: 10px;
+}
+
+#prompt-form input {
+width: 100%;
+padding: 5px;
+margin-bottom: 10px;
+}
+
+.modal-textarea {
+width: 100%;
+height: 200px;
+margin-bottom: 10px;
+padding: 5px;
+}
+
+/* ... (previous styles) ... */
+
+.dynamic-input-area {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+padding: 10px;
+border-top: 1px solid #ccc;
+}
+
+.input-mode {
+display: none;
+flex-grow: 1;
+}
+
+.input-mode.active {
+display: block;
+}
+
+.chat-input-field,
+.prompt-input-field {
+width: 100%;
+padding: 10px;
+margin-bottom: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+}
+
+.chat-button {
+padding: 10px 20px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.chat-button:disabled {
+background-color: #ccc;
+cursor: not-allowed;
+}
+
+.loading-indicator {
+margin-left: 10px;
+color: #007bff;
+}
+
+.loading-indicator.hidden {
+display: none;
+}
+
+/* ... (previous styles) ... */
+
+.message {
+margin-bottom: 15px;
+padding: 10px;
+border-radius: 5px;
+}
+
+.user-message {
+background-color: #e6f3ff;
+}
+
+.bot-message {
+background-color: #f0f0f0;
+}
+
+/* Markdown styles */
+.message h1, .message h2, .message h3, .message h4, .message h5, .message h6 {
+margin-top: 10px;
+margin-bottom: 5px;
+}
+
+.message p {
+margin-bottom: 10px;
+}
+
+.message ul, .message ol {
+margin-left: 20px;
+margin-bottom: 10px;
+}
+
+.message pre {
+background-color: #f4f4f4;
+padding: 10px;
+border-radius: 5px;
+overflow-x: auto;
+}
+
+.message code {
+font-family: 'Courier New', Courier, monospace;
+background-color: #f4f4f4;
+padding: 2px 4px;
+border-radius: 3px;
+}
+
+.message blockquote {
+border-left: 3px solid #ccc;
+margin: 0;
+padding-left: 10px;
+color: #666;
+}
+
+.message table {
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+
+.message th, .message td {
+border: 1px solid #ccc;
+padding: 8px;
+}
+
+.message img {
+max-width: 100%;
+height: auto;
+}
+
+.metadata {
+background-color: #9073f7; /* solid background color */
+border-radius: 5px; /* rounded corners */
+padding: 2px 5px; /* add some padding */
+box-shadow: 0px 0px 5px rgb(140, 132, 99, 0.5); /* light shadow of similar color */
+font-size: 0.8em; /* adjust font size to fit the tag */
+font-weight: bold; /* make the text bold */
+color: #333; /* text color */
+cursor: help; /* change cursor to help icon */
+}
+
+.metadata:hover {
+background-color: #ffd700; /* hover background color */
+box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5); /* hover shadow */
+}
+
+/* Styles for the textarea */
+.chat-input-field {
+width: 100%;
+padding: 10px;
+margin-bottom: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+font-family: monospace;
+white-space: pre-wrap;
+resize: vertical;
+}
+
+/* Styles for special tags */
+.special-tag {
+display: inline-block;
+padding: 2px 6px;
+margin: 2px;
+border-radius: 4px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+font-weight: bold;
+}
+
+.missing-info { background-color: #ffcccb; }
+.logical-inconsistency { background-color: #ffdab9; }
+.undefined-concept { background-color: #e6e6fa; }
+.assumed-prerequisite { background-color: #98fb98; }
+.irrelevant-content { background-color: #d3d3d3; }
+.flow-gap { background-color: #87cefa; }
+
+/* Ensure special tags are visible within messages */
+.message .special-tag {
+display: inline-block;
+max-width: 100%;
+word-break: break-word;
+}
+/* ... (rest of the styles) ... */
+
+/* ... (rest of the styles) ... */
+
+/* Add styles for the close button */
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Update styles for the selected prompt */
+.prompt-item.selected {
+  border: 2px solid var(--primary-color);
+}
+
+/* Add styles for the edit button */
+.edit-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.edit-button:hover {
+  background-color: var(--accent-color);
+}
+
+/* Update styles for the prompt items */
+.prompt-item {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.prompt-item:hover {
+  background-color: #f0f0f0;
+}
+
+.prompt-item.selected {
+  border: 2px solid var(--primary-color);
+  background-color: #e6f3ff; /* Light blue background for better visibility */
+}
+
+
+/* Add styles for the LLM select container */
+#llm-select-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#llm-select {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+/* Style for delete button */
+.delete-button {
+  background-color: #ff4136;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.delete-button:hover {
+  background-color: #d63b31;
+}
