@@ -10,20 +10,34 @@ export function updatePromptList() {
     });
 }
 
+
+
 export function createPromptItem(prompt) {
     const promptItem = document.createElement('div');
     promptItem.classList.add('prompt-item');
     promptItem.textContent = prompt.name;
+    promptItem.dataset.name = prompt.name; // Add this line to set the data-name attribute
     promptItem.onclick = () => selectPrompt(prompt);
     return promptItem;
-}
+  }
 
 export function selectPrompt(prompt) {
     const promptContent = document.getElementById('prompt-content');
     state.selectedPrompt = prompt;
     promptContent.textContent = prompt.content;
+    
+    // Remove 'selected' class from all prompt items
+    document.querySelectorAll('.prompt-item').forEach(item => item.classList.remove('selected'));
+    
+    // Add 'selected' class to the clicked prompt item
+    const selectedItem = document.querySelector(`.prompt-item[data-name="${prompt.name}"]`);
+    if (selectedItem) {
+      selectedItem.classList.add('selected');
+    }
+    
     generatePromptForm(prompt.variables);
-}
+  }
+  
 
 export function generatePromptForm(variables) {
     const promptForm = document.getElementById('prompt-form');

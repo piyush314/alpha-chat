@@ -275,20 +275,3 @@ function editSelectedPrompt() {
   }
 }
 
-// Update the selectPrompt function to highlight the selected prompt
-function selectPrompt(prompt) {
-  const promptContent = document.getElementById('prompt-content');
-  state.selectedPrompt = prompt;
-  promptContent.textContent = prompt.content;
-  
-  // Remove 'selected' class from all prompt items
-  document.querySelectorAll('.prompt-item').forEach(item => item.classList.remove('selected'));
-  
-  // Add 'selected' class to the clicked prompt item
-  const selectedItem = document.querySelector(`.prompt-item[data-name="${prompt.name}"]`);
-  if (selectedItem) {
-    selectedItem.classList.add('selected');
-  }
-  
-  generatePromptForm(prompt.variables);
-}
