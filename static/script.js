@@ -218,6 +218,20 @@ const llmSelect = document.getElementById('llm-select');
   editPromptButton.addEventListener('click', editSelectedPrompt);
 
 
+  const editSelectedLLMButton = document.getElementById('edit-selected-llm');
+  editSelectedLLMButton.addEventListener('click', showEditLLMConfigModal);
+
+  const editLLMConfigModal = document.getElementById('edit-llm-config-modal');
+  const closeEditModalButton = editLLMConfigModal.querySelector('.close-button');
+  closeEditModalButton.addEventListener('click', hideEditLLMConfigModal);
+
+  const updateLLMConfigButton = document.getElementById('update-llm-config');
+  updateLLMConfigButton.addEventListener('click', updateLLMConfig);
+
+  const deleteLLMConfigButton = document.getElementById('delete-llm-config');
+  deleteLLMConfigButton.addEventListener('click', deleteLLMConfig);
+
+
 });
 
 
@@ -251,7 +265,8 @@ const llmSelect = document.getElementById('llm-select');
     }
   };
 
-  // Update the updateLLMSelect function to handle cases where there are no configs
+
+  // Update the updateLLMSelect function
 function updateLLMSelect() {
   const llmSelect = document.getElementById('llm-select');
   const configNames = Object.keys(state.llmConfigs);
@@ -263,6 +278,7 @@ function updateLLMSelect() {
     llmSelect.value = state.selectedLLM;
   } else {
     llmSelect.innerHTML = '<option value="">No LLM configs available</option>';
+    state.selectedLLM = '';
   }
 }
 
@@ -272,6 +288,60 @@ function editSelectedPrompt() {
   if (state.selectedPrompt) {
     // For now, just log the action. We'll implement the edit functionality later.
     console.log('Editing prompt:', state.selectedPrompt);
+  }
+}
+
+function showEditLLMConfigModal() {
+  const selectedLLM = state.selectedLLM;
+  const config = state.llmConfigs[selectedLLM];
+  if (!config) return;
+
+  document.getElementById('edit-llm-name').value = config.name;
+  document.getElementById('edit-llm-endpoint').value = config.endpoint;
+  document.getElementById('edit-llm-api-key').value = config.apiKey;
+  document.getElementById('edit-llm-default-model').value = config.defaultModel;
+
+  const editLLMConfigModal = document.getElementById('edit-llm-config-modal');
+  editLLMConfigModal.style.display = 'block';
+}
+
+function hideEditLLMConfigModal() {
+  const editLLMConfigModal = document.getElementById('edit-llm-config-modal');
+  editLLMConfigModal.style.display = 'none';
+}
+
+function updateLLMConfig() {
+  const name = document.getElementById('edit-llm-name').value;
+  const config = {
+    name: name,
+    endpoint: document.getElementById('edit-llm-endpoint').value,
+    apiKey: document.getElementById('edit-llm-api-key').value,
+    defaultModel: document.getElementById('edit-llm-default-model').value,
+  };
+
+  state.llmConfigs[name] = config;
+  saveLLMConfig(config);
+  updateLLMSelect();
+  hideEditLLMConfigModal();
+}
+
+function deleteLLMConfig() {
+  const name = document.getElementById('edit-llm-name').value;
+  if (confirm(`Are you sure you want to delete the "${name}" configuration?`)) {
+    delete state.llmConfigs[name];
+    localStorage.setItem('llmConfigs', JSON.stringify(state.llmConfigs));
+    updateLLMSelect();
+    hideEditLLMConfigModal();
+
+    // If the deleted config was the selected one, select the first available config
+    if (state.selectedLLM === name) {
+      const availableConfigs = Object.keys(state.llmConfigs);
+      if (availableConfigs.length > 0) {
+        state.selectedLLM = availableConfigs[0];
+      } else {
+        state.selectedLLM = '';
+      }
+    }
   }
 }
 

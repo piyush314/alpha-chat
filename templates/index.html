@@ -33,9 +33,28 @@
       <!-- Chat header for title and actions -->
       <div id="chat-header" class="chat-header">
         <span id="current-chat-title" class="chat-title">New Chat</span>
-        <select id="llm-select" class="llm-select">
-          <option value="OpenAI">OpenAI</option>
-        </select>
+        <div id="llm-select-container">
+          <select id="llm-select" class="llm-select">
+            <option value="OpenAI">OpenAI</option>
+          </select>
+          <button id="edit-selected-llm" class="edit-button">Edit</button>
+        </div>
+        
+        <!-- Add this new modal for editing LLM configurations -->
+<div id="edit-llm-config-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h2>Edit LLM Configuration</h2>
+    <input type="text" id="edit-llm-name" placeholder="LLM Name" readonly>
+    <input type="text" id="edit-llm-endpoint" placeholder="API Endpoint">
+    <input type="password" id="edit-llm-api-key" placeholder="API Key">
+    <input type="text" id="edit-llm-default-model" placeholder="Default Model">
+    <button id="update-llm-config">Update Configuration</button>
+    <button id="delete-llm-config" class="delete-button">Delete Configuration</button>
+  </div>
+</div>
+
+
         <select id="model-select" class="model-select">
           <option value="">Select a model</option>
         </select>
@@ -127,6 +146,8 @@
       <button id="save-llm-config">Save Configuration</button>
     </div>
   </div>
+
+  
   
   <!-- Include external JavaScript libraries -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
